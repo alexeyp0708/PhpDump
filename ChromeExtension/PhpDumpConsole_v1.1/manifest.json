@@ -1,0 +1,22 @@
+{
+	"name":"PhpDumpConsole",
+	"version":"1.1",
+	"manifest_version":2,
+	"minimum_chrome_version":"61",
+	"devtools_page":"core/devtools.html",
+	"content_scripts":[{	"matches":["<all_urls>"],	"js": ["core/js/MessageSwitch_1_0_0.js", "core/js/content.js"]}],
+	"background":{
+		"persistent":true,
+		"page": "core/background.html"
+	},
+	 "page_action": {
+		"default_title": "DevTools Console for PhpDump"
+		,"default_icon": {                   
+            "16": "core/icons/settings_red16.png",        
+            "24": "core/icons/settings_red24.png", 
+            "32": "core/icons/settings_red32.png"
+          }
+		//,"default_popup": "core/poput_menu.html" 
+	 },
+	 "permissions":["tabs","webRequest","webRequestBlocking","cookies","<all_urls>","contentSettings","storage"]
+}

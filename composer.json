@@ -1,0 +1,18 @@
+{
+	"name":"Alpa/PhpDump",
+	"require":{
+		"php": ">=7",
+		"Alpa/EntityDetails":"^1.0.0"
+	},
+	"repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/ALexeyP0708/EntityDetails"
+        }
+    ],
+	"autoload":{
+		"psr-4":{
+			"Alpa\\PhpDump\\":"src/PhpDump"
+		}
+	}
+}

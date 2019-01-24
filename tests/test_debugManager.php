@@ -1,7 +1,4 @@
 <?php
-namespace Alpa;
-include_once __DIR__.'/../vendor/autoload.php';
-new PhpDump\InitDump();
 \Deb::print(['gh'=>'Hello','bay','may'],'print');
 \Deb::vdump(['gh'=>'Hello','bay','may'],'vdump');
 trigger_error ('My Error');
@@ -23,6 +20,8 @@ class TestClass2 extends TestClass{
 $obj=new TestClass2();
 $obj->test();
 $obj::test2();
+\deb::dump($obj,'dump object');
+\deb::infoClass($obj,'infoClass');
 ?>
 <html>
 <head>

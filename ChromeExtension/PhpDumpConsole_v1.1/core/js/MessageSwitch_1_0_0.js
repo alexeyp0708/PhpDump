@@ -198,7 +198,7 @@ class MessageSwitch  {
 			ports.stack[settings.name]={};
 		}
 		settings.name=port.name;
-		if('sender' in port){
+		if(('sender' in port) && typeof(port.sender)!=='undefined'){
 			settings.extId=port.sender.id;
 			if('tab' in port.sender){
 				settings.tabId=port.sender.tab.id;

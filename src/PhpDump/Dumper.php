@@ -232,7 +232,7 @@ class Dumper {
         foreach ($settings as $key => &$value) {
             switch ($key) {
                 case 'storage_class':    
-                if(!in_array('Alpa\PhpDump\DataView\DumpManagerInterface',class_implements($value))){
+                if(!in_array('Alpa\\PhpDump\\DataView\\DumpManagerInterface',class_implements($value))){
                     break;
                 }; 
                 case 'turn_on':
@@ -298,7 +298,13 @@ class Dumper {
         }
         $this->init();
         ob_start();
-        var_dump($var);
+		if(($ovd=ini_get("xdebug.overload_var_dump"))!==false){
+			ini_set('xdebug.overload_var_dump','off');
+			var_dump($var);
+			ini_set('xdebug.overload_var_dump',$ovd);
+		} else {
+			var_dump($var);
+		}
         $return = ob_get_contents();
         ob_end_clean();
         $this->addDump($return, $name);
@@ -333,6 +339,15 @@ class Dumper {
         }
         $this->init();
         $return = $this->reflect_info->getInfoObjectArrayRecurs($var);
+        $this->addDump($return, $name);
+    }
+    public function infoClass($var, $name = '') 
+    {
+        if (!$this->turnOnCheck() || !$this->turnOnCheck($name)) {
+            return;
+        }
+        $this->init();
+        $return = $this->reflect_info->getInfoClass($var);
         $this->addDump($return, $name);
     }
     /**

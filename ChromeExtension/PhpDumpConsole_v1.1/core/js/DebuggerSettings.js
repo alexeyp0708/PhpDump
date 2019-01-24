@@ -40,6 +40,7 @@ export default class DebuggerSettings{
 	//setSiteDumpSettings
 	setSite(settings={},save=false)
 	{
+		
 		var self=this;
 		var res_array={};
 		for(var pattern in settings){
@@ -53,7 +54,7 @@ export default class DebuggerSettings{
 				self.site[pattern]=settings[pattern];
 				res_array[pattern]=settings[pattern];
 			} 
-		}
+		}	
 		if(save==true){
 			self.saveStorage({site:res_array});
 		}
@@ -65,12 +66,11 @@ export default class DebuggerSettings{
 		if(url!==false){
 			var rest=[];
 			for(var ps in self.site){
-				pattern=new RegExp(ps,'i');
+				var pattern=new RegExp(ps,'i');
 				if(pattern.test(url)){
 					rest.push(self.site[ps]);
 				}
 			}
-			
 			return Lib.expand_replace_recursive({},...rest);
 		} else {
 			return self.site;

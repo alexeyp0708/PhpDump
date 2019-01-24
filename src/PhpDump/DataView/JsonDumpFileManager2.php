@@ -102,7 +102,7 @@ class JsonDumpFileManager2 implements DumpManagerInterface {
 			return;
 		}
 		if(is_string($data)&&!json_decode($data,true)||!is_string($data)){
-            $data=json_encode($data,JSON_PARTIAL_OUTPUT_ON_ERROR);
+            $data=json_encode($data,JSON_PARTIAL_OUTPUT_ON_ERROR);//JSON_FORCE_OBJECT|
         } 
 		if(empty($data) && !is_array($data)){
 			$data='{"Error":""}';

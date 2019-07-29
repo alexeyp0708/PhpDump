@@ -100,24 +100,16 @@ class Dumper {
 			}	;		
 			pcntl_signal(SIGTERM,$sigterm);
 		};*/
-        $error_hendler = function($errno, $errstr, $errfile, $errline, $errcontext) 
-		{	
-            $return = $errstr . ' => [' . $errfile . ']:[' . $errline . ']\n';
-            $this->error($errno, $errstr, $errfile, $errline);
-            $storage = &$this->storage;
-            switch ($errno) {
-                case E_ERROR:
-                case E_PARSE:
-                case E_CORE_ERROR:
-                case E_COMPILE_ERROR:
-                case E_USER_ERROR:
-                case E_USER_NOTICE:
-                case E_RECOVERABLE_ERROR:
-                    break;
-            }
-            //return false;
-        };
-        set_error_handler($error_hendler);
+        ErrorHandlers::init();
+        ErrorHandlers::addHandler([$this,'errorHandler']);
+        //set_error_handler([$this,'errorHandler']);
+    }
+    public function errorHandler($errno, $errstr, $errfile, $errline, $errcontext)
+    {
+        $return = $errstr . ' => [' . $errfile . ']:[' . $errline . ']\n';
+        $this->error($errno, $errstr, $errfile, $errline);
+        $storage = &$this->storage;
+        //return false;
     }
     /**
      * Enable/disable Dumper.
@@ -291,7 +283,7 @@ class Dumper {
      * @param string $name Record key
      * @return null;
      */
-    public function vdump($var, string $name = '') 
+    public function vdump($var, string $name = '',$backtrace=false)
 	{
         if (!$this->turnOnCheck() || !$this->turnOnCheck($name)) {
             return;
@@ -307,7 +299,7 @@ class Dumper {
 		}
         $return = ob_get_contents();
         ob_end_clean();
-        $this->addDump($return, $name);
+        $this->addDump($return, $name,$backtrace);
     }
     /**
      * Writing to the dump the result.
@@ -315,7 +307,7 @@ class Dumper {
      * @param string $name Record key
      * @return void
      */
-    public function vexport($var, $name = '')
+    public function vexport($var, $name = '',$backtrace=false)
 	{
         if (!$this->turnOnCheck() || !$this->turnOnCheck($name)) {
             return;
@@ -324,7 +316,7 @@ class Dumper {
        // $var = $this->excludeCircularReferences($var);
 		$var =$this->reflect_info->repeatRecursiveDataIntoArray($var);
         $return = var_export($var, true);
-        $this->addDump($return, $name);
+        $this->addDump($return, $name,$backtrace);
     }
     /**
      * Performs the analysis of objects recursively and Writing to the dump the result.
@@ -332,14 +324,14 @@ class Dumper {
      * @param string $name Record key
      * @return void
      */
-    public function dump($var, $name = '') 
+    public function dump($var, $name = '',$backtrace=false)
     {
         if (!$this->turnOnCheck() || !$this->turnOnCheck($name)) {
             return;
         }
         $this->init();
         $return = $this->reflect_info->getInfoObjectArrayRecurs($var);
-        $this->addDump($return, $name);
+        $this->addDump($return, $name,$backtrace);
     }
     public function infoClass($var, $name = '') 
     {
@@ -356,7 +348,7 @@ class Dumper {
      * @param string $name Record key
      * @return void
      */
-    public function print($var, $name = '')
+    public function print($var, $name = '', $backtrace=false)
 	{
         if (!$this->turnOnCheck() || !$this->turnOnCheck($name)) {
             return;
@@ -364,7 +356,7 @@ class Dumper {
         $this->init();
         //$return = $this->excludeCircularReferences($var);
 		$return =$this->reflect_info->repeatRecursiveDataIntoArray($var);
-        $this->addDump($return, $name);
+        $this->addDump($return, $name,$backtrace);
     }
     /**
      * 
@@ -407,18 +399,18 @@ class Dumper {
             E_ALL => 'E_ALL'
         ];
         $errno_str = isset($err_stack[$errno]) ? $err_stack[$errno] : $errno;
-        $this->addDump($errno_str . ': ' . $res, $name);
+        $this->addDump($errno_str . ': ' . $res, $name,false);
     }
     public function emptyMethod()
 	{
 		return null;
 	}
-    private function addDump($data, $name) 
+    private function addDump($data, $name,$backtrace=false)
 	{
         $uniq = '';
         $name = ($name !== '') ? $name : 't_' . time() . $uniq;
         $data = ['data' => $data];
-        if ($this->settings['debug_backtrace']) {
+        if ($this->settings['debug_backtrace'] || $backtrace) {
             $dbt = array_slice(debug_backtrace(2, 0), 0);
             $data = array_merge($data, ['backtrace' => $dbt]);
         }

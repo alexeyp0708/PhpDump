@@ -229,27 +229,27 @@ class Manager {
 		$self->dumper=null;
 		self::$self=null;
 	}
-	public static function dump($data, $name='') {
-		self::$dumper->dump($data, $name);
+	public static function dump($data, $name='',$backtrace=false) {
+		self::$dumper->dump($data, $name,$backtrace);
 	}
-	public static function infoClass($data, $name='') {
-		self::$dumper-> infoClass($data, $name);
+	public static function infoClass($data, $name='',$backtrace=false) {
+		self::$dumper-> infoClass($data, $name,$backtrace);
 	}
 	public static function error($errno = false, $errstr, $errfile = false, $errline = false, $errcontext = false) {
 	   self::$dumper->error($errno, $errstr, $errfile, $errline, $errcontext);
 	}
 
-	public static function vdump($data, $name = '')
+	public static function vdump($data, $name = '',$backtrace=false)
 	{
-		self::$dumper->vdump($data, $name);
+		self::$dumper->vdump($data, $name,$backtrace);
 	}
 
-	public static function vexport($data, $name = '')
+	public static function vexport($data, $name = '',$backtrace=false)
 	{
-		self::$dumper->vexport($data, $name);
+		self::$dumper->vexport($data, $name,$backtrace);
 	}
-	public static function print($data, $name = '')
+	public static function print($data, $name = '',$backtrace=false)
 	{
-		self::$dumper->print($data, $name);
+		self::$dumper->print($data, $name,$backtrace);
 	}
 }

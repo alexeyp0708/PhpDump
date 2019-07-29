@@ -102,13 +102,21 @@ class Dumper {
 		};*/
         ErrorHandlers::init();
         ErrorHandlers::addHandler([$this,'errorHandler']);
+
+        ExceptionHandlers::init();
+        ExceptionHandlers::addHandler([$this,'exceptionHandler']);
         //set_error_handler([$this,'errorHandler']);
+    }
+    public function exceptionHandler($ex)
+    {
+        $return ='Exception: '. $ex->getCode() . ' => [' . $ex->getFile() . ']:[' . $ex->getLine() . '] ' . $ex->getMessage();
+        \deb::print($ex->getTrace(),$return);
     }
     public function errorHandler($errno, $errstr, $errfile, $errline, $errcontext)
     {
-        $return = $errstr . ' => [' . $errfile . ']:[' . $errline . ']\n';
+        //$return = $errstr . ' => [' . $errfile . ']:[' . $errline . ']\n';
         $this->error($errno, $errstr, $errfile, $errline);
-        $storage = &$this->storage;
+        //$storage = &$this->storage;
         //return false;
     }
     /**

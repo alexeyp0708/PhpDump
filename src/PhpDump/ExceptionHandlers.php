@@ -6,7 +6,7 @@
  * Time: 15:37
  */
 namespace Alpa\PhpDump;
-    class ErrorHandlers {
+    class ExceptionHandlers {
         protected static $handlers=[];
         protected static $last_handler=null;
         protected static $init=false;
@@ -18,7 +18,7 @@ namespace Alpa\PhpDump;
         public static function init(){
             if (self::$init==true){ return; }
             self::$init=true;
-            $prev =set_error_handler([static::class,'runHandlers']);
+            $prev =set_exception_handler([static::class,'runHandlers']);
             if (!empty($prev)){
                static::addHandler($prev,null);
             }
@@ -27,13 +27,13 @@ namespace Alpa\PhpDump;
         /**
          * Добавляет обработчик в стек обработчиков
          * @param $hand
-         * @param null $error_types
+         * @param null $exception_types
          * @return null
          */
-        public static  function addHandler($hand,$error_types=null)
+        public static  function addHandler($hand,$exception_types=null)
         {
             if(is_callable($hand)){
-                self::$handlers[]=[$hand,$error_types];
+                self::$handlers[]=[$hand,$exception_types];
             }
         }
         public static function clearHandlers($lst=false)
@@ -52,14 +52,14 @@ namespace Alpa\PhpDump;
          * ТОгда по умолчанию будет установлен $error_types_default
          * @param null $error_types_default
          */
-        public function setHandlers(array $handlers,$error_types_default=null)
+        public function setHandlers(array $handlers,$exception_types_default=null)
         {
             foreach($handlers as &$handler){
                 if(!is_array($handler) || is_callable($handler)){
-                    $handler=[$handler,$error_types_default];
+                    $handler=[$handler,$exception_types_default];
                 }
                 if(!isset($handler[1])){
-                    $handler[1]=$error_types_default;
+                    $handler[1]=$exception_types_default;
                 }
             }
             unset($handler);
@@ -87,10 +87,10 @@ namespace Alpa\PhpDump;
          * @param $hand обработчик
          * @param array|integer|null $error_types
          */
-        public static function setLastHandler($hand,$error_types=null)
+        public static function setLastHandler($hand,$exception_types=null)
         {
             if(is_callable($hand)){
-                self::$last_handler=[$hand,$error_types];
+                self::$last_handler=[$hand,$exception_types];
             }
         }
 
@@ -99,23 +99,23 @@ namespace Alpa\PhpDump;
          * для обработчка в стеке, возвращаемый результат не имеет значения.
          *  результат возвращается последнего обработчика если он установлен через setLastHandler
          *  и имеет такоеже значение как и возвращаемый результат в set_error_handlers
-         * @param $errno
+         * @param \Throwable $ex
          * @param mixed ...$args
          * @return bool|mixed
          */
-        public static function runHandlers($errno,...$args)
+        public static function runHandlers( \Throwable $ex)
         {
             $answer=true;
             foreach(self::$handlers as &$handler){
-                if( static::permissionProcess($errno,$handler[1])){
-                    call_user_func($handler[0],$errno,...$args);
+                if( static::permissionProcess($ex,$handler[1])){
+                    call_user_func($handler[0],$ex);
                 }
             }
             unset($handler);
             if(self::$last_handler!=null){
                 // отработать условия по self::$last_handler[1]см set_error_handler 2й аргумент
-                if(static::permissionProcess($errno,self::$last_handler[1])){
-                    $answer=call_user_func(self::$last_handler[0],$errno,...$args);
+                if(static::permissionProcess($ex,self::$last_handler[1])){
+                    $answer=call_user_func(self::$last_handler[0],$ex);
                 }
             }
             return $answer;
@@ -128,15 +128,13 @@ namespace Alpa\PhpDump;
          * @param array|int $rule массив с перечислинными константами типов ошибок, или битовая маска
          * @return bool
          */
-        protected static function permissionProcess($param, $rule){
+        protected static function permissionProcess($ex, $rule){
             if(is_null($rule)){
                 return true;
-            } else
-            if(is_array($rule)){
-                return in_array($param,$rule);
-            } else if(((int)$param & (int)$rule)>0){
+            } else if(in_array(get_class($ex),$rule)){
                 return true;
             }
+            return false;
         }
     }
 //$check_exception_rename=runkit_function_rename ('set_exception_handler' , '_set_exception_handler');

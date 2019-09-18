@@ -26,5 +26,6 @@ $dump_fields=[
 	//'group'=>'' //Can be changed by the client part (via the browser console)
 	//'name'=>'' // only for server part
 ];
+
 $_debugger_= Manager::init($settings,$dump_settings,$dump_fields);
 class_alias('\Alpa\PhpDump\Manager','deb');

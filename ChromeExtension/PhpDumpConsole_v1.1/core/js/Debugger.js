@@ -26,14 +26,14 @@ export default class Debugger{
 		var dump_settings=self.settings.get(details.tabId,details.url,{command:'create',dump_fields:{context:details.tabId}});
 		var check=false;
 		for(var i in details.requestHeaders){
-			if(details.requestHeaders[i].name=='PHP-Dump-Settings'){
+			if(details.requestHeaders[i].name=='php-dump-settings'){
 				details.requestHeaders[i].value=JSON.stringify(Lib.expand_replace(JSON.parse(details.requestHeaders[i].value),dump_settings));
 				check=true;
 				break;
 			}
 		}
 		if(check===false){
-			details.requestHeaders.push({name:'PHP-Dump-Settings',value:JSON.stringify(dump_settings)});
+			details.requestHeaders.push({name:'php-dump-settings',value:JSON.stringify(dump_settings)});
 		}
 		Lib.setValPropPath(self.tabs,details.tabId+'.data.'+details.requestId+'.details.request.requestHeaders',details.requestHeaders);
 		return {requestHeaders: details.requestHeaders};
@@ -47,7 +47,7 @@ export default class Debugger{
 		var check=false;
 		var dump_settings={};
 		for(var i in details.responseHeaders){
-			if(details.responseHeaders[i].name=='PHP-Dump-Settings'){
+			if(details.responseHeaders[i].name=='php-dump-settings'){
 				dump_settings=JSON.parse(details.responseHeaders[i].value);
 				check=true;
 				break;
@@ -79,15 +79,15 @@ export default class Debugger{
 		xhr.open('POST',details.url,true);
 		var check=false;
 		for(var i in headers){
-			if(headers[i].name==='PHP-Dump-Settings'){
+			if(headers[i].name==='php-dump-settings'){
 				headers[i].value=JSON.stringify(Lib.expand_replace(JSON.parse(headers[i].value),header_dump));
 				check=true;
 			}
 			xhr.setRequestHeader(headers[i].name, headers[i].value);
 		}
 		if(check===false){
-			headers.push({name:'PHP-Dump-Settings',value:JSON.stringify(header_dump)});
-			xhr.setRequestHeader('PHP-Dump-Settings', header_dump);
+			headers.push({name:'php-dump-settings',value:JSON.stringify(header_dump)});
+			xhr.setRequestHeader('php-dump-settings' , header_dump);
 		}
 		//var buf=Lib.getValPropPath(self.tabs,details.tabId+'.data.[-1]');
 		xhr.onload=function(response){

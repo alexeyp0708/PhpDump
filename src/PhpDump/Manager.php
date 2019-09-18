@@ -105,8 +105,8 @@ class Manager {
                 return;
             }
         }
-        if (isset($headers['PHP-Dump-Settings'])){
-            $header = json_decode($headers['PHP-Dump-Settings'], true);
+        if (isset($headers['php-dump-settings'])){
+            $header = json_decode($headers['php-dump-settings'], true);
         }
         $hashkeys = self::$settings['hashkeys'];
         // проходим аунтентификацию.
@@ -127,8 +127,8 @@ class Manager {
             $response_headers[$value[0]] = implode(':', array_slice($value, 1));
         }
         $response_header = [];
-        if (isset($response_headers['PHP-Dump-Settings'])){
-            $response_header = json_decode($response_headers['PHP-Dump-Settings'], true);
+        if (isset($response_headers['php-dump-settings'])){
+            $response_header = json_decode($response_headers['php-dump-settings'], true);
         }
         if ($header['command'] == 'create') {
             $response_header = self::filteredSettingsHeader($response_header, 'create');
@@ -137,7 +137,7 @@ class Manager {
             $response_header = array_merge($response_header, $res);
             // header перезаписать
             header_register_callback(function()use ($response_header) {
-                header('PHP-Dump-Settings:' . json_encode($response_header));
+                header('php-dump-settings:' . json_encode($response_header));
             });
         }
     }
@@ -146,6 +146,7 @@ class Manager {
 		include_once $file;	
 	}
     public static function init($settings = [], $dump_settings = [], $dump_fields = null, $read_exit = true) {
+
         if (self::$is_init == true) {
             return;
         }
@@ -160,8 +161,8 @@ class Manager {
                 return;
             }
         }
-        if (isset($headers['PHP-Dump-Settings'])) {
-            $header = json_decode($headers['PHP-Dump-Settings'], true);
+        if (isset($headers['php-dump-settings'])) {
+            $header = json_decode($headers['php-dump-settings'], true);
         }
         $hashkeys = self::$settings['hashkeys'];
         // проходим аунтентификацию. // создать отдельный метод
@@ -199,7 +200,7 @@ class Manager {
             $headers_fields = self::filteredSettingsHeader($headers_fields, 'read');
             $headers_fields = array_merge($dump_response_settings, $headers_fields);
             header_register_callback(function()use($headers_fields) {
-                header('PHP-Dump-Settings:' . json_encode($headers_fields));
+                header('php-dump-settings:' . json_encode($headers_fields));
             });
         } else if ($header['command'] == 'read') {
             self::$dump_settings['save_dump'] = false;
@@ -211,7 +212,7 @@ class Manager {
             //self::setSettings(array_merge($settings,$header['settings']),array_merge($dump_settings,$header['dump_settings']),$dump_fields);
             self::setSettings($header['settings'], $header['dump_settings'], $header['dump_fields']);
             header_register_callback(function()use ($dump_response_settings) {
-                header('PHP-Dump-Settings:' . json_encode($dump_response_settings));
+                header('php-dump-settings:' . json_encode($dump_response_settings));
             });
             if ($read_exit === true) {
                 exit;

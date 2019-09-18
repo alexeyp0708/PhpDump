@@ -71,14 +71,14 @@ export default class Auth{
 		}
 		var check=false;
 		for(var i in details.requestHeaders){
-			if(details.requestHeaders[i].name=='PHP-Dump-Settings'){
+			if(details.requestHeaders[i].name=='php-dump-settings'){
 				details.requestHeaders[i].value=JSON.stringify(Lib.expand_replace(JSON.parse(details.requestHeaders[i].value),dump_settings));
 				check=true;
 				break;
 			}
 		}
 		if(check===false){
-			details.requestHeaders.push({name:'PHP-Dump-Settings',value:JSON.stringify(dump_settings)});
+			details.requestHeaders.push({name:'php-dump-settings',value:JSON.stringify(dump_settings)});
 		}
 		return {requestHeaders: details.requestHeaders};
 	}

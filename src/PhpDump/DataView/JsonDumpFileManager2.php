@@ -58,9 +58,20 @@ class JsonDumpFileManager2 implements DumpManagerInterface {
 		}
         $path_file = $this->getPaths($param);
         $this->dump = $param;
-        if (!file_exists($path_file->dir)) {
-            mkdir($path_file->dir, 0777, true);
-        }
+        set_error_handler(function(...$arg){
+            throw new \Exception('fuck');
+        });
+        do {
+            $check=false;
+             try{
+                if (!file_exists($path_file->dir)) {
+                    mkdir($path_file->dir, 0777, true);
+                }
+             }catch(\Throwable $e){
+                 $check=true;
+             }
+        } while ($check);
+        restore_error_handler();
         if ($type == 'create') {
             $tp = 'wb+';
         } elseif ($type == 'read') {

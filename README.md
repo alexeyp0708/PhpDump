@@ -1,7 +1,6 @@
 # Alpa\PhpDump  
 
-#### Разделы
-* [Интеграция в MODX](https://github.com/ALexeyP0708/PhpDump/blob/dev/Doc/integration_in_MODX.md)
+
 
 #### Описание
 

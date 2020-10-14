@@ -154,13 +154,13 @@ class JsonDumpFileManager2 implements DumpManagerInterface {
             return $data;
         }
     }
-    public function delete() {
+    public function delete($check=true) {
         if ($this->file !== null) {
             //$path_file = $this->file->getRealPath();
 			$path_file = $this->getPaths($this->dump)->file;
             $dir_context = $this->dump->path .'/'. $this->dump->user;
             $dir_user = $this->dump->path  .'/'. $this->dump->user. '/' . $this->dump->context ;
-            $this->close();
+            $this->close($check);
             unlink($path_file);
             if(empty(glob($dir_user.'/*'))){
                 rmdir($dir_user);

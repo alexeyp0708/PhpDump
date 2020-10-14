@@ -16,6 +16,7 @@ class Dumper {
     private $dump_fields;
     public $storage;
     private $reflect_info;
+    private $is_close=false;
     private $default_settings = [
         'turn_on' => [],
         'save_dump' => false,
@@ -45,14 +46,17 @@ class Dumper {
 			case 'pcntl_signal': 
 			case 'register_shutdown_function':
 				$e = error_get_last();
-				if (!in_array($e['type'],[E_ERROR,E_PARSE,E_CORE_ERROR,E_COMPILE_ERROR])){
-					break;
-				}
-				if ($this->settings['save_dump'] !== false) {
-					$this->error($e['type'], $e['message'], $e['file'], $e['line']);
-				}
+				if(!is_null($e)){
+                    if (!in_array($e['type'],[E_ERROR,E_PARSE,E_CORE_ERROR,E_COMPILE_ERROR])){
+                        break;
+                    }
+                    if ($this->settings['save_dump'] !== false) {
+                        $this->error($e['type'], $e['message'], $e['file'], $e['line']);
+                    }
+                    break;
+                }
 			case '__destruct':
-				
+                if($this->is_close){break;}
 				if ($this->settings['render_dump_after'] === true) {
 					$this->renderDump();
 					if ($this->settings['unset_dump_after'] === true) {
@@ -60,6 +64,7 @@ class Dumper {
 					}
 				}
 				$this->end();
+                $this->is_close=true;
 			break;
 		}
 	}
@@ -110,9 +115,10 @@ class Dumper {
     public function exceptionHandler($ex)
     {
         $return ='Exception: '. $ex->getCode() . ' => [' . $ex->getFile() . ']:[' . $ex->getLine() . '] ' . $ex->getMessage();
-        \deb::print($ex->getTrace(),$return);
+        //\deb::print($ex->getTrace(),$return);
+        $this->print($ex->getTrace(),$return);
     }
-    public function errorHandler($errno, $errstr, $errfile, $errline, $errcontext)
+    public function errorHandler($errno, $errstr, $errfile, $errline)
     {
         //$return = $errstr . ' => [' . $errfile . ']:[' . $errline . ']\n';
         $this->error($errno, $errstr, $errfile, $errline);
@@ -465,7 +471,7 @@ class Dumper {
             $storage = new $this->settings['storage_class']();
             $storage->open(DataView\Dump, 'read');
         }
-        $storage->delete();
+        $storage->delete(false);
     }
     /**
      * If the settings are changed based on the code logic, then this method is used to change them in dumper.

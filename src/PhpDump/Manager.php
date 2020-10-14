@@ -89,6 +89,15 @@ class Manager {
         }
         return $res;
     }
+    public static function getHeaders()
+    {
+
+        $headers = \getallheaders();
+        if(!isset($headers['php-dump-settings']) && isset($headers['Php-Dump-Settings'])){
+            $headers['php-dump-settings']=$headers['Php-Dump-Settings'];
+        }
+        return $headers;
+    }
     public static function reorganization($settings = [], $dump_settings = [], $dump_fields = null, $read_exit = true) {
         /* нахера козе боян.  Принцип. - Если нужно где то настройки изменить до отправки заголовков, то вызываем этот метод. 
           Он применит соответствующие настройки и изменит заголовки. Заголовки дебагера определенные ранее будут перезаписаны с соответствующими настройками.
@@ -97,7 +106,7 @@ class Manager {
         if (headers_sent()) {
             return;
         }
-        $headers = getallheaders();
+        $headers =self::getHeaders();
         $header = [];
         if (is_bool(self::$dump_settings['turn_on'])) {
             self::$dumper->turnOn(self::$dump_settings['turn_on']);
@@ -105,9 +114,7 @@ class Manager {
                 return;
             }
         }
-        if (isset($headers['php-dump-settings'])){
-            $header = json_decode($headers['php-dump-settings'], true);
-        }
+
         $hashkeys = self::$settings['hashkeys'];
         // проходим аунтентификацию.
         if (empty($header) ||
@@ -152,8 +159,11 @@ class Manager {
         }
 		self::$dumper=new Dumper();
         self::$is_init = true;
-        $headers = \getallheaders();
+        $headers =self::getHeaders();
         $header = [];
+        if (isset($headers['php-dump-settings'])){
+            $header = json_decode($headers['php-dump-settings'], true);
+        }
         self::defaultSettings($settings, $dump_settings, $dump_fields);
         if (is_bool(self::$dump_settings['turn_on'])) {
             self::$dumper->turnOn(self::$dump_settings['turn_on']);

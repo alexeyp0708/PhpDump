@@ -1,4 +1,4 @@
-# Alpa\PhpDump  
+# Alpa\PhpDump  - deprecated : A new application will be implemented
 
 
 
